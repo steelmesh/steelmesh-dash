@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% for pkg in packages %}
+<h2>{{ pkg.name }}</h2>
+<div class='sm-packages'>
+	{% for ver in pkg.versions %}
+	    <a class="{% if forloop.first %}btn-primary{% else %}btn{% endif %}" data-package="{{ pkg.name }}" data-version="{{ ver }}" href="#">Version: {{ ver}}</a>
+    	{% if loop.first and !loop.last %}
+    	    <h4>Previous Versions:</h4>
+    	{% endif %}
+	{% endfor %}
+</div>
+{% else %}
+<div class="alert alert-block alert-info">
+	There are no packages available for installation.
+</div>
+{% endfor %}
+{% endblock %}

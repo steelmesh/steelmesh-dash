@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<script id="sm-versions-template" type="text/x-handlebars-template">
+<p><strong>Steelmesh Version: <code>{[ steelmesh ]}</code></strong></p>
+
+<h3>Node Components</h3>
+<table class="table-bordered table-striped">
+<thead>
+    <tr>
+        <th>Component</th>
+        <th>Version</th>
+    </tr>
+</thead>
+<tbody>
+{[#each node]}
+	<tr>
+		<td>{[ system ]}</td>
+		<td>{[ version ]}</td>
+	</tr>
+{[/each]}
+</tbody>
+</table>
+</script>
+
+<h2>System Health</h2>
+<div id="sm-overall-status" class="alert">pending...</div>
+
+<h3>Individual Systems</h3>
+{% for system in systems %}
+	<div class="sm-system">
+		{% if system.available %}
+		<span class="label label-success">available</span>
+		{% else %}
+		<span class="label label-important">offline</span>
+		{% endif %}
+		<h4>{{ system.id }}</h4>
+	</div>
+	{% for sub in system.subsystems %}
+	<div class="alert alert-{% if sub.available %}success{% else %}error{% endif %}">
+	{{ forloop.key }}
+	</div>
+	{% else %}
+	<div class="alert alert-info">no subsystems reported</div>
+	{% endfor %}
+{% endfor %}
+
+<hr />
+<h2>Software Versions</h2>
+<div id="sm-versions" data-url="/version"></div>
+
+<script>
+$(function() {
+	SteelmeshDash.fill('#sm-versions');
+	
+	SteelmeshDash.monitorServerStatus(function(status) {
+		var statusDiv = $('#sm-overall-status');
+		
+		// reset the classname
+		statusDiv[0].className = 'alert';
+		
+		// update the contents
+		statusDiv
+			.html(status)
+			.addClass(status === 'up' ? 'alert-success' : 'alert-error')
+			.show();
+	});
+});
+</script>
+{% endblock %}
